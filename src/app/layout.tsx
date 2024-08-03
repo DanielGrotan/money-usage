@@ -1,4 +1,5 @@
 import { cn } from "@/utils/shadcn";
+import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -16,14 +17,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={cn(
-          "min-h-[100dvh] bg-background antialiased",
-          inter.className
-        )}>
-        {children}
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <body
+          className={cn(
+            "min-h-[100dvh] bg-background antialiased container",
+            inter.className
+          )}>
+          {children}
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
