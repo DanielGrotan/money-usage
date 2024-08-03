@@ -9,27 +9,50 @@ import {
 
 const pgTable = pgTableCreator((name) => `money_usage_${name}`);
 
-export const users = pgTable("users", {
+export const usersModel = pgTable("users", {
   externalId: text("extarnal_id").primaryKey(),
 });
 
-export const usersRelations = relations(users, ({ many }) => ({
-  payments: many(payments),
+export const usersRelations = relations(usersModel, ({ many }) => ({
+  payments: many(paymentsModel),
+  labels: many(labelsModel),
 }));
 
-export const payments = pgTable("payments", {
+export const paymentsModel = pgTable("payments", {
   id: serial("id").primaryKey(),
   ownerId: text("user_id")
-    .references(() => users.externalId)
+    .references(() => usersModel.externalId, { onDelete: "cascade" })
     .notNull(),
   text: text("text").notNull(),
   date: date("date", { mode: "date" }).notNull(),
   costNorwegianØre: integer("cost_norwegian_øre").notNull(),
+  labelId: integer("label_id").references(() => labelsModel.id),
 });
 
-export const paymentsRelations = relations(payments, ({ one }) => ({
-  owner: one(users, {
-    fields: [payments.ownerId],
-    references: [users.externalId],
+export const paymentsRelations = relations(paymentsModel, ({ one }) => ({
+  owner: one(usersModel, {
+    fields: [paymentsModel.ownerId],
+    references: [usersModel.externalId],
   }),
+  label: one(labelsModel, {
+    fields: [paymentsModel.labelId],
+    references: [labelsModel.id],
+  }),
+}));
+
+export const labelsModel = pgTable("labels", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id")
+    .references(() => usersModel.externalId, { onDelete: "cascade" })
+    .notNull(),
+  text: text("text").notNull(),
+  color: text("color").notNull(),
+});
+
+export const labelsRelations = relations(labelsModel, ({ one, many }) => ({
+  user: one(usersModel, {
+    fields: [labelsModel.userId],
+    references: [usersModel.externalId],
+  }),
+  payments: many(paymentsModel),
 }));

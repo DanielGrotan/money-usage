@@ -1,7 +1,5 @@
-import { users } from "@/db/schema";
-import { db } from "@/utils/database";
+import { createUser, deleteUser } from "@/api/user";
 import { WebhookEvent } from "@clerk/nextjs/server";
-import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { Webhook } from "svix";
 
@@ -55,11 +53,9 @@ export async function POST(req: Request) {
   }
 
   if (eventType === "user.created") {
-    await db.insert(users).values({
-      externalId: id,
-    });
+    await createUser(id);
   } else if (eventType === "user.deleted") {
-    await db.delete(users).where(eq(users.externalId, id));
+    await deleteUser(id);
   }
 
   return new Response("", { status: 200 });
