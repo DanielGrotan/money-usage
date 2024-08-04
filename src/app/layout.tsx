@@ -1,3 +1,5 @@
+import { Toaster } from "@/components/ui/toaster";
+import { ReactQueryProvider } from "@/utils/providers/react-query-provider";
 import { cn } from "@/utils/shadcn";
 import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
@@ -21,10 +23,14 @@ export default function RootLayout({
       <html lang="en">
         <body
           className={cn(
-            "min-h-[100dvh] bg-background antialiased container",
-            inter.className
-          )}>
-          {children}
+            "min-h-[100dvh] bg-background antialiased",
+            inter.className,
+          )}
+        >
+          <ReactQueryProvider>
+            {children}
+            <Toaster />
+          </ReactQueryProvider>
         </body>
       </html>
     </ClerkProvider>

@@ -26,7 +26,9 @@ export const paymentsModel = pgTable("payments", {
   text: text("text").notNull(),
   date: date("date", { mode: "date" }).notNull(),
   costNorwegianØre: integer("cost_norwegian_øre").notNull(),
-  labelId: integer("label_id").references(() => labelsModel.id),
+  labelId: integer("label_id").references(() => labelsModel.id, {
+    onDelete: "set null",
+  }),
 });
 
 export const paymentsRelations = relations(paymentsModel, ({ one }) => ({
